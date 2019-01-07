@@ -75,7 +75,7 @@ CREATE TRIGGER
 …
 )
 all code explained
-Go to https://github.com/niannianli/TestTranslator
+Go to https://github.com/niannianli/TestTranslator/tree/master/testtranslator
 From bottom to up:
 •	File named references.pdf, i found this resource online which includes almost all details about Datalog/SQL/Prolog, used as the main reference for this project
 •	Two files named details/details.docx, whichever you can open: all details about this project
