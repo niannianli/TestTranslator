@@ -1,0 +1,17 @@
+Datalog
+Customers(CustomerId,CustomerName,Country).
+Orders(OrderId,CustomerId).
+Suppliers(SupplierId,SupplierName,Country).
+Customers(0,'alex','mexico').
+Customers(1,'brian','germany').
+Orders(0,1).
+Orders(1,1).
+Suppliers(0,'chris','china').
+Suppliers(1,'dave','usa').
+CustomersFromMexico(CustomerId,CustomerName,Country) :- Customers(CustomerId,CustomerName,Country), Country='mexico'.
+CustomersFromMexicoNames(CustomerName) :- Customers(CustomerId,CustomerName,Country), Country='mexico'.
+CustomersOrders(CustomerName, OrderId) :- Customers(CustomerId,CustomerName,Country); Orders(OrderId,CustomerId).
+Countries(Country) :- Customers(CustomerId,CustomerName,Country)
+Countries(Country) :- Suppliers(SupplierId,SupplierName,Country).
+CountriesShared(CountryShared) :- Customers(CustomerId,CustomerName,Country), Suppliers(SupplierId,SupplierName,Country). 
+CustomersNotFromMexico(CustomerId, CustomerName, Country) :- Customers(CustomerId, CustomerName, Country), NOT CustomersFromMexico(CustomerId, CustomerName, Country).

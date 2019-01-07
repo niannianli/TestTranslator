@@ -1,0 +1,16 @@
+SQL
+CREATE OR REPLACE TABLE Customers (CustomerId int, CustomerName varchar(150), Country varchar(150));
+CREATE OR REPLACE TABLE Orders (OrderId int, CustomerId int);
+CREATE OR REPLACE TABLE Suppliers (SupplierId int, SupplierName varchar(150), Country varchar(150));
+INSERT INTO Customers VALUES (0,'alex','mexico');
+INSERT INTO Customers VALUES (1,'brian','germany');
+INSERT INTO Orders VALUES (0,1);
+INSERT INTO Orders VALUES (1,1);
+INSERT INTO Suppliers VALUES (0,'chris','china');
+INSERT INTO Suppliers VALUES (1,'dave','usa');
+CREATE OR REPLACE VIEW CustomersFromMexico AS SELECT * FROM Customers WHERE Country='mexico';
+CREATE OR REPLACE VIEW CustomersFromMexicoNames AS SELECT CustomerName FROM Customers WHERE Country='mexico';
+CREATE OR REPLACE VIEW CustomersOrders AS SELECT Customers.CustomerName,Orders.OrderId FROM Customers INNER JOIN Orders ON Customers.CustomerId=Orders.CustomerId;
+CREATE OR REPLACE VIEW Countries AS SELECT Country FROM Customers UNION SELECT Country FROM Suppliers;
+CREATE OR REPLACE VIEW CountriesShared AS SELECT Country FROM Customers INTERSECT SELECT Country FROM Suppliers;
+CREATE OR REPLACE VIEW CustomersNotFromMeciso AS SELECT * FROM Customers WHERE NOT Country='mexico';

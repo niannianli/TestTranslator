@@ -1,0 +1,4 @@
+SQL
+CREATE UNLOGGED TABLE p2 (counts integer, status text, PRIMARY key (counts));
+INSERT into clock (counts) values (0) ;
+CREATE OR REPLACE VIEW uhosts AS (SELECT hid, row_number () OVER () as u_hid FROM hosts);

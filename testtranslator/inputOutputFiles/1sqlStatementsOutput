@@ -1,0 +1,17 @@
+A('a1')
+A('a2')
+A('a3')
+B('b1')
+B('b2')
+B('a1')
+C('a1','a1')
+C('a1','b2')
+C('a2','b2')
+PROJECTION_RULE(
+SELECTION_RULE(a);
+INNER_JOIN_RULE(a)ij(
+LEFT_JOIN_RULE(a :- lj(
+RIGHT_JOIN_RULE(a :- rj(
+FULL_JOIN_RULE(a :- fj(
+UNION_RULE(a :- ;B(b.
+DIFFERENCE_RULE(a :-  ¬B(b.

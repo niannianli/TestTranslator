@@ -1,0 +1,21 @@
+Datalog
+A('a1'). 
+A('a2'). 
+A('a3'). 
+B('a1'). 
+B('b1'). 
+B('b2'). 
+C('a1','a1'). 
+C('a1','b2'). 
+C('a2','b2'). 
+PROJECTION_RULE(a) :- A(a).
+SELECTION_RULE(a) :- A(a), a='a2'.
+CARTESION_RULE(a,b) :- A(a), B(b).
+INNER_JOIN_RULE(a) :- A(a), B(a).?
+LEFT_JOIN_RULE(a,b) :- lj(A(a), B(b), a=b).
+RIGHT_JOIN_RULE(a,b) :- rj(A(a), B(b), a=b).
+FULL_JOIN_RULE(a,b) :- fj(A(a), B(b), a=b).
+UNION_RULE(a,b) :- A(a); B(b).
+DIFFERENCE_RULE(a) :- A(a), NOT B(b).?
+
+
