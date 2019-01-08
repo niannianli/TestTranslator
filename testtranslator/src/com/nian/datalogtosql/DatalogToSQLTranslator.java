@@ -24,27 +24,8 @@ public class DatalogToSQLTranslator {
 
 		// then output SQL statements
 		SQLBuilder sqlBuilder = new SQLBuilder();
-
-		String[] strings = input.replaceAll("\n","").split(".");
-
-		//for each fact or rule
-		for (String s : strings) {
-			if (s.contains(":-")) {
-				//PROJECTION_RULE
-				//a) :- A
-				//a).
-				
-				String[] ss = s.split("\\(");
-			}else {
-				//C
-				//'a2','b2'). 
-				String[] ssss = s.split("\\(");
-				sb.append(sqlBuilder.createTable(ssss[0]).build());
-			}
-		}
-
-		sb.append(sqlBuilder.createViews().build());
-		return sb.toString();
+		
+		return sqlBuilder.build();
 	}
 
 	//no evaluate for now
@@ -53,12 +34,14 @@ public class DatalogToSQLTranslator {
 
 		ProgramType type = datalogProgram.getProgramType();
 		ProgramEvaluatorParser evaluatorParser = new ProgramEvaluatorParser(datalogProgram);
+		
+		evaluatorParser.parse(input);
 
 		//for all types, do the same thing for now
 		//more work to be done here later
 		if (type == ProgramType.POSITIVE) {
 			
-			evaluatorParser.parse(input);
+			//evaluatorParser.parse(input);
 		} else if (type == ProgramType.SEMI_POSITIVE || type == ProgramType.STRATIFIABLE) {
 			// not working for this part, assume all rules are correct/safe
 			
@@ -66,12 +49,12 @@ public class DatalogToSQLTranslator {
 			// evaluator.stratifiedEvaluation(stratification);
 			//parse is the last step
 			
-			evaluatorParser.parse(input);
+			//evaluatorParser.parse(input);
 		} else {
 			// "Error: could not compute program type";
 			
 			//assume all rules are safe now
-			evaluatorParser.parse(input);
+			//evaluatorParser.parse(input);
 		}
 	}
 

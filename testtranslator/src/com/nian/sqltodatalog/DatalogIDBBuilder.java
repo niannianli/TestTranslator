@@ -2,7 +2,10 @@ package com.nian.sqltodatalog;
 
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.util.StringUtils;
 
 public class DatalogIDBBuilder {
 
@@ -16,125 +19,136 @@ public class DatalogIDBBuilder {
 
 		String[] arr = input.split(" ");
 
-		int fromIndex = 0;
-
 		String viewName = arr[4];
 
-		StringBuilder s = new StringBuilder();
-		s.append(viewName + "(");
-
-		String tableName = null;
-
-		if (arr[6].equals("SELECT")) {
-
-			for (int i = 0; i < arr.length - 3; i++) {
-
-				if (arr[i].equals("FROM")) {
-					fromIndex = i;
-					tableName = arr[i + 1];
-
-					Map<String, ArrayList<String>> mapVariables = SaveStringsUtilOne.getTableNameVariables();
-
-					Iterator it = mapVariables.entrySet().iterator();
-					while (it.hasNext()) {
-						Map.Entry pair = (Map.Entry) it.next();
-						if (pair.getKey().equals(tableName)) {
-
-							ArrayList<String> almv = mapVariables.get(tableName);
-
-							if (arr[7].equals("*")) {
-
-								s.append(String.join(",", almv) + " :- ");
-
-							} else {
-								int numberOfVariables = fromIndex - 6 - 1;
-								for (int j = 0; j < numberOfVariables; j++) {
-									if (j < numberOfVariables - 1) {
-										s.append(almv.get(j) + ",");
-									} else {
-										s.append(almv.get(j) + ")");
-									}
-								}
-							}
-
-							if (arr[i + 2].equals("WHERE")) {
-
-								String[] finalString = (arr[i + 3]).split("\\=\\+\\-", 2);
-
-								for (String str : almv) {
-									if (str.equals(finalString[0])) {
-										s.append(str + finalString[1]);
-									}
-								}
-
-								s.append(";");
-							} else if (arr[i + 2].equals("JOIN")) {
-								String tableNameTwo = arr[i + 4];
-
-								ArrayList<String> almvJoin = mapVariables.get(tableNameTwo);
-
-								s.append("(" + String.join(",", almvJoin) + ",");
-
-								String onCcondition = arr[i + 6];
-
-								s.append(onCcondition + ").");
-							}
-
-							else if (arr[i + 2].equals("INNER")) {
-
-								s.append("ij(");
-
-							} else if (arr[i + 2].equals("LEFT")) {
-
-								s.append("lj(");
-
-							} else if (arr[i + 2].equals("RIGHT")) {
-
-								s.append("rj(");
-
-							} else if (arr[i + 2].equals("FULL")) {
-
-								s.append("fj(");
-
-							} else if (arr[i + 2].equals("UNION")) {
-
-								s.append(";");
-
-								// now we only take talbe negation
-								int indexOfTableOrViewName = arr.length - 1;
-
-								String tableNameTwo = arr[indexOfTableOrViewName];
-
-								ArrayList<String> almvUnion = mapVariables.get(tableNameTwo);
-
-								s.append(tableNameTwo + "(" + String.join(",", almvUnion) + ".");
-
-							} else if (arr[i + 2].equals("EXCEPT")) {
-
-								s.append(" ¬");
-
-								int indexOfTableOrViewName = arr.length - 1;
-
-								String tableNameTwo = arr[indexOfTableOrViewName];
-
-								ArrayList<String> almvExcept = mapVariables.get(tableNameTwo);
-
-								s.append(tableNameTwo + "(" + String.join(",", almvExcept) + ".");
-
-							}
-
-							break;
-						}
-						break;
+		StringBuilder sbHeader = new StringBuilder();
+		sbHeader.append(viewName + "(");
+		
+		String tableName = arr[9].replaceAll("\\;", "");
+		
+		StringBuilder sbBody = new StringBuilder();
+					sbBody.append(tableName + "(");
+				
+				//meaning we have one variable symbol, which is *
+				if(arr[7].equals("*")) {
+					ArrayList<String> variables = SaveStringsUtilOne.getTableNameVariables().get(tableName);
+					
+					//variables must exist already
+					sbHeader.append(StringUtils.arrayToCommaDelimitedString(variables.toArray()));
+					sbBody.append(StringUtils.arrayToCommaDelimitedString(variables.toArray()));
+				}else {
+					ArrayList<String> viewVariables = new ArrayList<String>();
+					String[] s = arr[7].split(",");
+					sbHeader.append(StringUtils.arrayToCommaDelimitedString(s));
+					sbBody.append(StringUtils.arrayToCommaDelimitedString(s));
+					for(String viewVariable: s) {
+						viewVariables.add(viewVariable);
 					}
-
+					
+					Map<String, ArrayList<String>> viewVariablesMap = new HashMap<String, ArrayList<String>>();
+					viewVariablesMap.put(viewName, viewVariables);						
 				}
-
-			}
-		}
-
-		// to be continued...
-		return s.toString() + "\n";
-
-	}
+				
+				boolean isInnerJoin = false;
+				boolean isLeftJoin = false;
+				boolean isRightJoin = false;
+				boolean isFullJoin = false;
+				
+				if(arr.length<=10) {
+					sbBody.append(")");
+				}else {
+				
+                if(arr[10].equals("WHERE")){
+                	sbBody.append("), ");
+                	sbBody.append(arr[11]);
+                }
+                
+                else if(arr[11].equals("JOIN")) {
+                	
+                	if(arr[10].equals("INNER")) {
+                		isInnerJoin = true;
+                	}	else if(arr[10].equals("LEFT")) {
+                		isLeftJoin = true;
+                	}else if(arr[10].equals("RIGHT")) {
+                		isRightJoin = true;
+                	}else if(arr[10].equals("FULL")) {
+                		isFullJoin = true;
+                	}
+                	
+                		String tableNameTwo = arr[12];
+                		sbBody.append("), " + tableNameTwo+"(");
+                		
+                		ArrayList<String> variables = SaveStringsUtilOne.getTableNameVariables().get(tableNameTwo);
+                		if(arr[7].equals("*")) {
+                		sbHeader.append(","+StringUtils.arrayToCommaDelimitedString(variables.toArray()));
+                		}
+                		sbBody.append(StringUtils.arrayToCommaDelimitedString(variables.toArray()) + "), ");
+                		
+                		//A.a=B.b
+                		String s = arr[14];
+                		//a=b)
+                		String[] news = s.split("\\=");
+                		StringBuilder sb = new StringBuilder();
+                		for(String subs : news) {
+                			sb.append(subs.substring(2,subs.length()) + "=");
+                		}
+                		
+                		String lastString = sb.toString().substring(0,sb.toString().length()-1);
+                		sbBody.append(lastString + ")");
+                }
+                	
+                else if(arr[10].equals("UNION")) {
+                	sbBody.append("); ");
+                	String tableNameTwo = arr[14];
+                	sbBody.append(tableNameTwo+"(");
+                	if(arr[12].equals("*")) {
+                		ArrayList<String> variables = SaveStringsUtilOne.getTableNameVariables().get(tableNameTwo);
+    					
+    					//variables must exist already
+                		sbHeader.append(","+StringUtils.arrayToCommaDelimitedString(variables.toArray()));
+    					sbBody.append(StringUtils.arrayToCommaDelimitedString(variables.toArray()) + ")");
+                	}else {
+    					String[] s = arr[12].split(",");
+    					sbHeader.append(","+StringUtils.arrayToCommaDelimitedString(s));
+    					sbBody.append(StringUtils.arrayToCommaDelimitedString(s) + ")");
+                	}
+                }
+                
+                else if(arr[10].equals("EXCEPT")) {
+                	sbBody.append("), ¬");
+                	String tableNameTwo = arr[14];
+                	sbBody.append(tableNameTwo+"(");
+                	if(arr[12].equals("*")) {
+                		ArrayList<String> variables = SaveStringsUtilOne.getTableNameVariables().get(tableNameTwo);
+    					
+    					//variables must exist already
+    					sbBody.append(StringUtils.arrayToCommaDelimitedString(variables.toArray()) + ")");
+                	}else {
+    					String[] s = arr[12].split(",");
+    					sbBody.append(StringUtils.arrayToCommaDelimitedString(s) + ")");
+                	}
+                }
+				}
+				
+	    //end of header
+        sbHeader.append(")");
+        //rule sign
+        sbHeader.append(" :- ");
+        if(isInnerJoin) {
+        	sbHeader.append("ij(");
+        }
+        if(isLeftJoin) {
+        	sbHeader.append("lj(");
+        }
+        if(isRightJoin) {
+        	sbHeader.append("rj(");
+        }
+        if(isFullJoin) {
+        	sbHeader.append("fj(");
+        }
+        //connect to body
+        sbHeader.append(sbBody.toString());
+		//end of rule
+		return sbHeader.toString() + "." + "\n";
+}
 }
