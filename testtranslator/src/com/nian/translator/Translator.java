@@ -5,7 +5,7 @@ import com.nian.sqltodatalog.SQLToDatalogTranslator;
 
 public class Translator {
 
-	//need parameter: mapping: another format of input
+	// need parameter: mapping: another format of input
 	public String translateDatalogToSQL(String input) {
 
 		DatalogToSQLTranslator translator = new DatalogToSQLTranslator(input);
@@ -13,7 +13,7 @@ public class Translator {
 		return translator.toSql();
 	}
 
-	//seperated, funtion well
+	// seperated, funtion well
 	public String translateSQLToDatalog(String input) {
 
 		SQLToDatalogTranslator translator = new SQLToDatalogTranslator(input);

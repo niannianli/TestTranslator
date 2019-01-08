@@ -10,8 +10,8 @@ import java.io.OutputStreamWriter;
 
 public class TranslatorStart {
 
-	//get input file
-	//generate output file
+	// get input file
+	// generate output file
 	public static void main(String[] args) {
 
 		Boolean inputDatalog = false;
@@ -29,10 +29,10 @@ public class TranslatorStart {
 			File file = new File(args[0]);
 			fileReader = new FileReader(file);
 			bufferedReader = new BufferedReader(fileReader);
-			
+
 			stringBuffer = new StringBuffer();
 			String line;
-			
+
 			while ((line = bufferedReader.readLine()) != null) {
 				if (line.equals("Datalog")) {
 					inputDatalog = true;
@@ -55,11 +55,11 @@ public class TranslatorStart {
 			}
 
 			String input = stringBuffer.toString();
-			
+
 			Translator translator = new Translator();
 
 			if (inputSQL) {
-				
+
 				output = translator.translateSQLToDatalog(input);
 			} else if (inputDatalog) {
 
@@ -68,7 +68,7 @@ public class TranslatorStart {
 		}
 
 		try {
-			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(args[0]+"Output"), "utf-8"));
+			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(args[0] + "Output"), "utf-8"));
 			writer.write(output);
 		} catch (IOException ex) {
 		} finally {
