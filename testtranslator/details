@@ -37,7 +37,7 @@ CREATE OR REPLACE VIEW DIFFERENCE_RULE AS SELECT * FROM A EXCEPT SELECT * FROM B
 facts
 rules: identified by sign :-
 •	most rules are Positive
-•	Negation is applied to one rule: Stratification: Netation on IDB
+•	Negation is applied to one rule: Stratification: Negation on IDB
 •	no recursive rule
 •	Semi–Positive: can be seen as positive, not tested this time
 •	all rules are safe, manually evaluated, more code will be added to evaluate automatically
@@ -59,7 +59,7 @@ INNER_JOIN_RULE(a) :- ij(A(a), B(b), a=b).
 LEFT_JOIN_RULE(a,b) :- lj(A(a), B(b), a=b).
 RIGHT_JOIN_RULE(a,b) :- rj(A(a), B(b), a=b).
 FULL_JOIN_RULE(a,b) :- fj(A(a), B(b), a=b).
-UNIONRULE_RULE(a,b) :- A(a); B(b).
+UNION_RULE(a,b) :- A(a); B(b).
 DIFFERENCE_RULE(a) :- A(a), ¬B(b).
 
 Extra test files: to be tested later:
@@ -92,20 +92,20 @@ o	if input is SQL, output will be Datalog
 •	Go to folder src/com/nian/:
 •	Folder translator:
 o	File TranslatorStart: read input file, run translation function, generate output file
-o	File Translator: 2 functions: traslate Datalog to SQL; or translate SQL to Datalog; run the function being called by TranslatorStart
+o	File Translator: 2 functions: translate Datalog to SQL; or translate SQL to Datalog; run the function being called by TranslatorStart
 •	Folder sqltodatalog:
 o	File StatementType: categorize SQL statements to 3 types for now: CREATE, INSERT, VIEW; VIEW meaning CREATE OR REPLACE VIEW …AS SELECT…, which includes several SQL statements
-o	File SQLToDatalogTranslator: this class is called by Translator, to call build functions to parse input SQL and genereate output Datalog
-o	File SQLStatement: every line of string (from input) ends with a ; is parsed as a SQLStatement; then we can decide what type of SQL statement it is: CREATE/INSERT/VIEW
+o	File SQLToDatalogTranslator: this class is called by Translator, to call build functions to parse input SQL and generate output Datalog
+o	File SQLStatement: every line of string (from input) ends with a ; is parsed as a SQLStatement; then we can decide what type of SQL statement it is: CREATE/INSERT/VIEW…
 o	File SaveStringsUtilOne: when we are parsing SQL statements, save all table names, variables for each table, values(records) for each table, which can be used for later parsing input/building output
-o	File DatalogIDBBuilder: parse SQL VIEW statements, genereate Datalog rules
+o	File DatalogIDBBuilder: parse SQL VIEW statements, generate Datalog rules
 o	File DatalogEDBWithValuesBuilder: parse SQL INSERT statements, generate EDBs/facts with values; a table can have many records, each record is an array of values
-o	File DatalogEDBBuilder: parse SQL CREATE TABLE statements, just save table name and variables; do not generate anyting; one table only has one list of variables; 
+o	File DatalogEDBBuilder: parse SQL CREATE OR REPLACE TABLE statements, just save table name and variables; do not generate anything; one table only has one list of variables
 o	File DatalogBuilder: has 3 functions, each will be called by SQLToDatalogTranslator to build 2 types of Datalog programs; each function is calling one type of builder to build Datalog program
 •	Folder datalogtosql:
 o	File StratifiedDatalogProgram: used to stratify datalog program to ensure rule safety, not implemented yet
 o	File SQLViewSelectBuilder: used to build CREATE OR REPLACE VIEW … AS SELECT …, SQL statements
-o	File SQLCreateInsertBuilder: used to build CREATE TABLE/INSERT INTO, SQL statements, they must be built together: as tables must be created, before we can insert values; also variables’ types can only be parsed from insert statements
+o	File SQLCreateInsertBuilder: used to build CREATE OR REPLACE TABLE/INSERT INTO, SQL statements, they must be built together: as tables must be created, before we can insert values; also variables’ types can only be parsed from insert statements
 o	File SQLBuilder: 2 functions called by DatalogToSQLTranslator to build SQL statements, each function is calling one builder to build SQL statements
 o	File SaveStringsUtilTwo: evaluate(to be done later) and parse input Datalog program, save all info for further use to build SQL statements
 o	File ProgramType: decide Datalog to be POSITIVE, SEMI-POSITIVE, OR STRATIFIABLE…not used for now
@@ -116,8 +116,9 @@ o	File DatalogProgram: a datalog program should come with an input, not checking
 to be improved
 •	Many iterations in the code: running time/space not efficient
 •	7 types of sql statements for now: CREATE, INSERT, SELECT * FROM WHERE, SELECT … FROM WHERE, JOIN, UNION, EXCEPT 
+•	Corresponding to 6 types of EDB clause/IDB rules for now: facts with values, selection rule, projection rule, join rule, union rule, difference rule
 •	SQL: not checked yet: 
-o	Pk
+o	pk
 o	fk
 o	NOT NULL
 o	UNIQUE
@@ -127,16 +128,14 @@ o	GROUP BY
 o	Variable type: INTEGER, VARCHAR…; for now, all string
 o	Cache
 o	Cartesion
-•	Corresponding to 6 types of EDB clause/IDB rules for now: facts with values, selection rule, projection rule, join rule, union rule, difference rule
 •	Assume all input datalog rules are safe, a datalog rule is safe if every variable appears in some positive relational atom, more code can be added to evaluate/ensure datalog rule safety later, as got too many bugs in this part, removed the code for now
 •	Rule finite-infinite not checked
 •	Stratification: not done yet
-•	A Java framework can be used to parse the datalog rules/sql statements, for now, I pass the input token by token, which is tedious; can try to use the framework later, the below syntax can be parsed easily:
+•	A Java framework can be used to parse the datalog rules/sql statements, which is not used yet. For now, I parse the input token by token, which is tedious; can try to use the framework later, then the below syntax can be parsed easily:
 o	Atoms. An atom has the form a(t1, ..., tn), where a is a predicate (relation) symbol, and ti (1 ≤ i ≤ n) are terms. If i is 0, then the atom is simply written as a. 
 o	Restricted atoms. A restricted atom has the form -A, where A is an atom built with no built-in. 
-o	Conditions. A condition is a Boolean expression containing conjunctions (,/2), 
-o	disjunctions (;/2), built-in comparison operators, constants and variables. 
-•	No recursive rule yet:
+o	Conditions. A condition is a Boolean expression containing conjunctions (,/2), disjunctions (;/2), built-in comparison operators, constants and variables. 
+•	No recursive datalog rule yet:
 o	e.g.:
 WITH RECURSIVE all super(Major,Minor) AS (SELECT PART, SUBPART
 FROM assembly
