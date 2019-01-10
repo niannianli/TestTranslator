@@ -1,0 +1,46 @@
+Last login: Thu Jan 10 13:01:44 on ttys000
+Niannians-MacBook-Air:~ niannianli$ cd git/repository/testtranslator
+Niannians-MacBook-Air:testtranslator niannianli$ ls
+1translator.jar		bin			details.docx		references.pdf		~$etails.docx
+ExtraTestFiles		details			inputOutputFiles	src
+Niannians-MacBook-Air:testtranslator niannianli$ java -jar 1translator.jar inputOutputFiles/1sqlStatements
+Niannians-MacBook-Air:testtranslator niannianli$ java -jar 1translator.jar inputOutputFiles/1datalogPrograms
+Niannians-MacBook-Air:testtranslator niannianli$ cd inputOutputFiles
+Niannians-MacBook-Air:inputOutputFiles niannianli$ ls
+1datalogPrograms	1datalogProgramsOutput	1sqlStatements		1sqlStatementsOutput
+Niannians-MacBook-Air:inputOutputFiles niannianli$ cat 1datalogProgramsOutput
+CREATE OR REPLACE TABLE A (a string);
+CREATE OR REPLACE TABLE B (b string);
+INSERT INTO A VALUES ('a1');
+INSERT INTO A VALUES ('a2');
+INSERT INTO A VALUES ('a3');
+INSERT INTO B VALUES ('b1');
+INSERT INTO B VALUES ('b2');
+INSERT INTO B VALUES ('a1');
+CREATE OR REPLACE VIEW PROJECTION_RULE AS SELECT *  FROM A;
+CREATE OR REPLACE VIEW SELECTION_RULE AS SELECT *  FROM A WHERE a='a2';
+CREATE OR REPLACE VIEW INNER_JOIN_RULE AS SELECT *  FROM A INNER JOIN B ON A.a=B.b;
+CREATE OR REPLACE VIEW LEFT_JOIN_RULE AS SELECT *  FROM A LEFT JOIN B ON A.a=B.b;
+CREATE OR REPLACE VIEW RIGHT_JOIN_RULE AS SELECT *  FROM A RIGHT JOIN B ON A.a=B.b;
+CREATE OR REPLACE VIEW FULL_JOIN_RULE AS SELECT *  FROM A FULL JOIN B ON A.a=B.b;
+CREATE OR REPLACE VIEW UNION_RULE AS SELECT *  FROM A UNION SELECT *  FROM B;
+CREATE OR REPLACE VIEW DIFFERENCE_RULE AS SELECT *  FROM A EXCEPT SELECT *  FROM B;
+Niannians-MacBook-Air:inputOutputFiles niannianli$ cat 1sqlStatementsOutput
+A('a1')
+A('a2')
+A('a3')
+B('b1')
+B('b2')
+B('a1')
+C('a1','a1')
+C('a1','b2')
+C('a2','b2')
+PROJECTION_RULE(a) :- A(a).
+SELECTION_RULE(a) :- A(a), a='a2'.
+INNER_JOIN_RULE(a) :- ij(A(a), B(b), a=b).
+LEFT_JOIN_RULE(a,b) :- lj(A(a), B(b), a=b).
+RIGHT_JOIN_RULE(a,b) :- rj(A(a), B(b), a=b).
+FULL_JOIN_RULE(a,b) :- fj(A(a), B(b), a=b).
+UNION_RULE(a,b) :- A(a); B(b).
+DIFFERENCE_RULE(a) :- A(a), ¬B(b).
+Niannians-MacBook-Air:inputOutputFiles niannianli$ 
