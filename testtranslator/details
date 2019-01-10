@@ -79,7 +79,7 @@ Go to https://github.com/niannianli/TestTranslator/tree/master/testtranslator
 From bottom to up:
 •	File named references.pdf, i found this resource online which includes almost all details about Datalog/SQL/Prolog, used as the main reference for this project
 •	Two files named details/details.docx, whichever you can open: all details about this project
-•	File named commandLineTestSession.rtf: one command line session to test the code
+•	File named commandLineTestSession: one command line session to test the code
 •	File named 1translator.jar: executable file: use below commands to run the file:
 o	cd /…DIRECTORY WHRERE YOU SAVE THIS FILE…/
 o	java –jar 1translator.jar /…DIRECTORY WHERE YOU SAVE INPUT FILE…/INPUT FILE NAME
@@ -103,10 +103,7 @@ o	File DatalogEDBWithValuesBuilder: parse SQL INSERT statements, generate EDBs/f
 o	File DatalogEDBBuilder: parse SQL CREATE OR REPLACE TABLE statements, just save table name and variables; do not generate anything; one table only has one list of variables
 o	File DatalogBuilder: has 3 functions, each will be called by SQLToDatalogTranslator to build 2 types of Datalog programs; each function is calling one type of builder to build Datalog program
 •	Folder datalogtosql:
-o	File StratifiedDatalogProgram: used to stratify datalog program to ensure rule safety, not implemented yet
-o	File SQLViewSelectBuilder: used to build CREATE OR REPLACE VIEW … AS SELECT …, SQL statements
-o	File SQLCreateInsertBuilder: used to build CREATE OR REPLACE TABLE/INSERT INTO, SQL statements, they must be built together: as tables must be created, before we can insert values; also variables’ types can only be parsed from insert statements
-o	File SQLBuilder: 2 functions called by DatalogToSQLTranslator to build SQL statements, each function is calling one builder to build SQL statements
+o	File SQLBuilder:  function called by DatalogToSQLTranslator to build SQL statements; all info used to build SQL statements are already saved before while parsing
 o	File SaveStringsUtilTwo: evaluate(to be done later) and parse input Datalog program, save all info for further use to build SQL statements
 o	File ProgramType: decide Datalog to be POSITIVE, SEMI-POSITIVE, OR STRATIFIABLE…not used for now
 o	File ProgramEvaluatorParser: we parse only, evaluate to be done; called by DatalogToSQLTranslator
@@ -117,7 +114,7 @@ to be improved
 •	Many iterations in the code: running time/space not efficient
 •	7 types of sql statements for now: CREATE, INSERT, SELECT * FROM WHERE, SELECT … FROM WHERE, JOIN, UNION, EXCEPT 
 •	Corresponding to 6 types of EDB clause/IDB rules for now: facts with values, selection rule, projection rule, join rule, union rule, difference rule
-•	SQL: not checked yet: 
+•	SQL/Datalog: not checked yet: 
 o	pk
 o	fk
 o	NOT NULL
@@ -125,18 +122,16 @@ o	UNIQUE
 o	REFERENCES
 o	DETERMINED BY 
 o	GROUP BY
-o	Variable type: INTEGER, VARCHAR…; for now, all string
+o	Variable Type: INTEGER, VARCHAR…; for now, all string
 o	Cache
 o	Cartesion
 •	Assume all input datalog rules are safe, a datalog rule is safe if every variable appears in some positive relational atom, more code can be added to evaluate/ensure datalog rule safety later, as got too many bugs in this part, removed the code for now
 •	Rule finite-infinite not checked
 •	Stratification: not done yet
-•	A Java framework can be used to parse the datalog rules/sql statements, which is not used yet. For now, I parse the input token by token, which is tedious; can try to use the framework later, then the below syntax can be parsed easily:
-o	Atoms. An atom has the form a(t1, ..., tn), where a is a predicate (relation) symbol, and ti (1 ≤ i ≤ n) are terms. If i is 0, then the atom is simply written as a. 
-o	Restricted atoms. A restricted atom has the form -A, where A is an atom built with no built-in. 
-o	Conditions. A condition is a Boolean expression containing conjunctions (,/2), disjunctions (;/2), built-in comparison operators, constants and variables. 
 •	No recursive datalog rule yet:
 o	e.g.:
+       RULE_EXAMPLE(X, Y) :- A_EXAMPLE(X), RULE_EXAMPLE(X, Y)
+
 WITH RECURSIVE all super(Major,Minor) AS (SELECT PART, SUBPART
 FROM assembly
 UNION
@@ -148,3 +143,9 @@ CREATE RECURSIVE VIEW allSubparts(Major,Minor) AS SELECT PART SUBPART
 FROM assembly
 UNION
 SELECT all.Major assb.SUBPART FROM allSubparts all, assembly assb WHERE all.Minor=assb.PART
+
+•	A Java framework can be used to parse the datalog rules/sql statements, which is not used yet. For now, I parse the input token by token, which is tedious; can try to use the framework later, then the below syntax can be parsed easily:
+o	Atoms. An atom has the form a(t1, ..., tn), where a is a predicate (relation) symbol, and ti (1 ≤ i ≤ n) are terms. If i is 0, then the atom is simply written as a. 
+o	Restricted atoms. A restricted atom has the form -A, where A is an atom built with no built-in. 
+o	Conditions. A condition is a Boolean expression containing conjunctions (,/2), disjunctions (;/2), built-in comparison operators, constants and variables. 
+•	Code refactoring…
