@@ -1,6 +1,7 @@
 package com.nian.datalogtosql;
 
 public enum ProgramType {
+	//not checked for now
 	POSITIVE("Positive"), SEMI_POSITIVE("Semi-Positive"), STRATIFIABLE("Stratifiable"), UNKNOW("Unknow");
 
 	// positive: facts/rules

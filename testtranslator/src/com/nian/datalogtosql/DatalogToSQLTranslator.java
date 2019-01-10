@@ -12,9 +12,6 @@ public class DatalogToSQLTranslator {
 		this.datalogProgram = new DatalogProgram(input);
 	}
 
-	// output
-	StringBuilder sb = new StringBuilder();
-
 	public String toSql() {
 
 		//no evaluate for now

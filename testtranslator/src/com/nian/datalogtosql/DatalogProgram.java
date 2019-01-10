@@ -1,24 +1,9 @@
- package com.nian.datalogtosql;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Set;
-
-import org.jgrapht.DirectedGraph;
-import org.jgrapht.alg.CycleDetector;
-import org.jgrapht.graph.DefaultDirectedGraph;
-
-import fr.univlyon1.mif37.dex.mapping.Literal;
-import fr.univlyon1.mif37.dex.mapping.Mapping;
-import fr.univlyon1.mif37.dex.mapping.Relation;
-import fr.univlyon1.mif37.dex.mapping.Tgd;
-import fr.univlyon1.mif37.dex.parser.MappingParser;
-import fr.univlyon1.mif37.dex.parser.ParseException;
+package com.nian.datalogtosql;
 
 public class DatalogProgram {
 
 	protected String input;
-	//protected Mapping mapping;
+	// protected Mapping mapping;
 
 	public DatalogProgram(String input) {
 		// input passed here is actually being used
@@ -146,16 +131,12 @@ public class DatalogProgram {
 	/*
 	 * public Mapping getMapping() { return mapping; }
 	 */
-	private class SignedEdge {
-		private boolean sign;
-
-		public SignedEdge(boolean sign) {
-			this.sign = sign;
-		}
-
-		public boolean getSign() {
-			return sign;
-		}
-	}
+	/*
+	 * private class SignedEdge { private boolean sign;
+	 * 
+	 * public SignedEdge(boolean sign) { this.sign = sign; }
+	 * 
+	 * public boolean getSign() { return sign; } }
+	 */
 
 }
